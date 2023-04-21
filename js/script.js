@@ -14,11 +14,6 @@ let start2;
 let end1;
 let end2;
 
-// timeouts
-
-let timeout1;
-let timeout2;
-
 function onYouTubeIframeAPIReady() {
   const playBtn = document.getElementById("playBtn");
   const resetBtn = document.getElementById("resetBtn");
@@ -34,22 +29,14 @@ function onYouTubeIframeAPIReady() {
   player1 = new YT.Player("player1", {
     videoId: video1,
     startSeconds: start1,
-    events: {
-      onStateChange: onPlayer1StateChange,
-    },
   });
 
   player2 = new YT.Player("player2", {
     videoId: video2,
     startSeconds: start2,
-    events: {
-      onStateChange: onPlayer2StateChange,
-    },
   });
 
   playBtn.addEventListener("click", function () {
-    resetTimers();
-
     player2.mute();
     player1.seekTo(start1);
     player2.seekTo(start2);
@@ -80,26 +67,6 @@ document.addEventListener("DOMContentLoaded", function () {
     playerContainers[i].style.width = maxWidth + "px";
   }
 });
-
-function onPlayer1StateChange(event) {
-  if (event.data == YT.PlayerState.PLAYING) {
-    timeout1 = setTimeout(function () {
-      if (player1.getCurrentTime() >= end1) {
-        player1.pauseVideo();
-      }
-    }, end1 * 1000 - start1 * 1000);
-  }
-}
-
-function onPlayer2StateChange(event) {
-  if (event.data == YT.PlayerState.PLAYING) {
-    timeout2 = setTimeout(function () {
-      if (player2.getCurrentTime() >= end1) {
-        player2.pauseVideo();
-      }
-    }, end2 * 1000 - start2 * 1000);
-  }
-}
 
 function startTimers() {
   // Set the start times for each timer
@@ -168,6 +135,7 @@ function updateTimer1() {
   if (player1.getCurrentTime() >= end1) {
     // Stop the timer for video 1
     stopTimer1();
+    player1.pauseVideo();
   }
 }
 
@@ -184,15 +152,13 @@ function updateTimer2() {
   if (player2.getCurrentTime() >= end2) {
     // Stop the timer for video 2
     stopTimer2();
+    player2.pauseVideo();
   }
 }
 
 function resetTimers() {
   clearInterval(interval1);
   clearInterval(interval2);
-
-  clearTimeout(timeout1);
-  clearTimeout(timeout2);
 
   document.getElementById("timer1").innerHTML = "0.00s";
   document.getElementById("timer2").innerHTML = "0.00s";
