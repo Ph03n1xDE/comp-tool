@@ -48,6 +48,8 @@ function onYouTubeIframeAPIReady() {
   });
 
   playBtn.addEventListener("click", function () {
+    resetTimers();
+
     player2.mute();
     player1.seekTo(start1);
     player2.seekTo(start2);
@@ -126,7 +128,7 @@ function stopTimer1() {
     const timediff = Math.abs(endtime1 - endtime2);
 
     // Display the timediff in parentheses next to the second timer
-    document.getElementById("timer2").innerHTML +=
+    document.getElementById("timer1").innerHTML +=
       " (+" + timediff.toFixed(2) + "s)";
   }
 }
@@ -145,7 +147,7 @@ function stopTimer2() {
   // Check if both timers have finished
   if (typeof endtime1 !== "undefined") {
     // Calculate the difference between the elapsed times
-    const timediff = Math.abs(endtime1 - endtime2);
+    const timediff = Math.abs(endtime2 - endtime1);
 
     // Display the timediff in parentheses next to the second timer
     document.getElementById("timer2").innerHTML +=
