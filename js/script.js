@@ -1,165 +1,142 @@
-/* eslint-disable space-before-function-paren */
-/* eslint-disable no-shadow */
-/* eslint-disable no-undef */
+var video1 = videojs("video1");
+var video2 = videojs("video2");
+var startingTimeVideo1 = 0;
+var startingTimeVideo2 = 0;
+var intervalId1 = null;
+var intervalId2 = null;
 
-// Create variables to hold the player objects
-let player1;
-let player2;
-
-// Variables for start times
-let start1;
-let start2;
-
-// Variables for end times
-let end1;
-let end2;
-
-function onYouTubeIframeAPIReady() {
-  const playBtn = document.getElementById("playBtn");
-  const resetBtn = document.getElementById("resetBtn");
-
-  const urlParams = new URLSearchParams(window.location.search);
-  const video1 = urlParams.get("video1");
-  const video2 = urlParams.get("video2");
-  start1 = urlParams.get("start1");
-  start2 = urlParams.get("start2");
-  end1 = urlParams.get("end1");
-  end2 = urlParams.get("end2");
-
-  player1 = new YT.Player("player1", {
-    videoId: video1,
-    startSeconds: start1,
-  });
-
-  player2 = new YT.Player("player2", {
-    videoId: video2,
-    startSeconds: start2,
-  });
-
-  playBtn.addEventListener("click", function () {
-    player2.mute();
-    player1.seekTo(start1);
-    player2.seekTo(start2);
-    player1.playVideo();
-    player2.playVideo();
-
-    startTimers();
-  });
-
-  resetBtn.addEventListener("click", function () {
-    resetTimers();
-
-    player1.seekTo(start1);
-    player2.seekTo(start2);
-    player1.pauseVideo();
-    player2.pauseVideo();
-  });
-}
-
-document.addEventListener("DOMContentLoaded", function () {
-  const playerContainers = document.getElementsByClassName("player");
-
-  for (let i = 0; i < playerContainers.length; i++) {
-    const maxWidth = playerContainers[i].clientWidth;
-    const maxHeight = Math.floor(maxWidth * (9 / 16));
-
-    playerContainers[i].style.height = maxHeight + "px";
-    playerContainers[i].style.width = maxWidth + "px";
+video1.on("keydown", function (e) {
+  if (e.which === 190) {
+    // period key
+    myPlayer.pause();
+    myPlayer.currentTime(
+      myPlayer.currentTime() + 1.0 / myPlayer.playbackRate() / 60
+    ); // 30 frames per second
+  } else if (e.which === 188) {
+    // comma key
+    myPlayer.pause();
+    myPlayer.currentTime(
+      myPlayer.currentTime() - 1.0 / myPlayer.playbackRate() / 60
+    ); // 30 frames per second
   }
 });
 
-function startTimers() {
-  // Set the start times for each timer
-  starttime1 = new Date().getTime();
-  starttime2 = new Date().getTime();
+video2.on("keydown", function (e) {
+  if (e.which === 190) {
+    // period key
+    myPlayer.pause();
+    myPlayer.currentTime(
+      myPlayer.currentTime() + 1.0 / myPlayer.playbackRate() / 60
+    ); // 30 frames per second
+  } else if (e.which === 188) {
+    // comma key
+    myPlayer.pause();
+    myPlayer.currentTime(
+      myPlayer.currentTime() - 1.0 / myPlayer.playbackRate() / 60
+    ); // 30 frames per second
+  }
+});
 
-  // Start updating the display for each timer every millisecond
-  interval1 = setInterval(updateTimer1, 1);
-  interval2 = setInterval(updateTimer2, 1);
-}
-
-function stopTimer1() {
-  // Stop the timer for video 1
-  clearInterval(interval1);
-
-  // Set the end time for video 1
-  endtime1 = new Date().getTime();
-  endtime1 = (endtime1 - starttime1) / 1000;
-
-  // Update the timer display for video 1 with the final time
-  document.getElementById("timer1").innerHTML = endtime1.toFixed(2) + "s";
-
-  // Check if both timers have finished
-  if (typeof endtime2 !== "undefined") {
-    // Calculate the difference between the elapsed times
-    const timediff = Math.abs(endtime1 - endtime2);
-
-    // Display the timediff in parentheses next to the second timer
-    document.getElementById("timer1").innerHTML +=
-      " (+" + timediff.toFixed(2) + "s)";
+function saveStartingTime(videoId) {
+  var player = videojs(videoId);
+  if (videoId === "video1") {
+    startingTimeVideo1 = player.currentTime();
+    document.getElementById("saved-time-video1").textContent =
+      startingTimeVideo1.toFixed(2) + "s";
+  } else {
+    startingTimeVideo2 = player.currentTime();
+    document.getElementById("saved-time-video2").textContent =
+      startingTimeVideo2.toFixed(2) + "s";
   }
 }
 
-function stopTimer2() {
-  // Stop the timer for video 2
-  clearInterval(interval2);
-
-  // Set the end time for video 2
-  endtime2 = new Date().getTime();
-  endtime2 = (endtime2 - starttime2) / 1000;
-
-  // Update the timer display for video 2 with the final time
-  document.getElementById("timer2").innerHTML = endtime2.toFixed(2) + "s";
-
-  // Check if both timers have finished
-  if (typeof endtime1 !== "undefined") {
-    // Calculate the difference between the elapsed times
-    const timediff = Math.abs(endtime2 - endtime1);
-
-    // Display the timediff in parentheses next to the second timer
-    document.getElementById("timer2").innerHTML +=
-      " (+" + timediff.toFixed(2) + "s)";
-  }
+function startVideos() {
+  video2.muted(true);
+  clearInterval(intervalId1);
+  clearInterval(intervalId2);
+  intervalId1 = setInterval(function () {
+    var time1 = video1.currentTime() - startingTimeVideo1;
+    document.getElementById("video-1-timer").innerHTML = time1.toFixed(2) + "s";
+  }, 10);
+  intervalId2 = setInterval(function () {
+    var time2 = video2.currentTime() - startingTimeVideo2;
+    document.getElementById("video-2-timer").innerHTML = time2.toFixed(2) + "s";
+  }, 10);
+  video1.currentTime(startingTimeVideo1);
+  video2.currentTime(startingTimeVideo2);
+  video1.play();
+  video2.play();
 }
 
-function updateTimer1() {
-  // Calculate the elapsed time for video 1
-  let elapsed1 = new Date().getTime() - starttime1;
-  elapsed1 = elapsed1 / 1000;
+document.getElementById("start-btn").addEventListener("click", function () {
+  startVideos();
+});
 
-  // Update the timer display for video 1 with the elapsed time
-  elapsed1 = Math.round(elapsed1 * 1000) / 1000;
-  document.getElementById("timer1").innerHTML = elapsed1.toFixed(2) + "s";
+const urlParams = new URLSearchParams(window.location.search);
 
-  // Check if the elapsed time is within the start and end times of video 1
-  if (player1.getCurrentTime() >= end1) {
-    // Stop the timer for video 1
-    stopTimer1();
-    player1.pauseVideo();
-  }
+// Get the value of the video1 URL parameter, if it exists
+const video1Param = urlParams.get("video1");
+if (video1Param) {
+  var player = videojs.players.video1;
+  player.poster("");
+  player.src({
+    src: `https://www.youtube.com/watch?v=${video1Param}`,
+    type: "video/youtube",
+  });
 }
 
-function updateTimer2() {
-  // Calculate the elapsed time for video 2
-  let elapsed2 = new Date().getTime() - starttime2;
-  elapsed2 = elapsed2 / 1000;
-
-  // Update the timer display for video 2 with the elapsed time
-  elapsed2 = Math.round(elapsed2 * 1000) / 1000;
-  document.getElementById("timer2").innerHTML = elapsed2.toFixed(2) + "s";
-
-  // Check if the elapsed time is within the start and end times of video 2
-  if (player2.getCurrentTime() >= end2) {
-    // Stop the timer for video 2
-    stopTimer2();
-    player2.pauseVideo();
-  }
+// Get the value of the video2 URL parameter, if it exists
+const video2Param = urlParams.get("video2");
+if (video2Param) {
+  video2.src({
+    src: `https://www.youtube.com/watch?v=${video2Param}`,
+    type: "video/youtube",
+  });
 }
 
-function resetTimers() {
-  clearInterval(interval1);
-  clearInterval(interval2);
+const start1Param = urlParams.get("start1");
+if (start1Param) {
+  startingTimeVideo1 = parseFloat(start1Param);
+  document.getElementById("saved-time-video1").textContent =
+    startingTimeVideo1.toFixed(2) + "s";
+}
 
-  document.getElementById("timer1").innerHTML = "0.00s";
-  document.getElementById("timer2").innerHTML = "0.00s";
+const start2Param = urlParams.get("start2");
+if (start2Param) {
+  startingTimeVideo2 = parseFloat(start2Param);
+  document.getElementById("saved-time-video2").textContent =
+    startingTimeVideo2.toFixed(2) + "s";
+}
+
+function copyToClipboard() {
+  let url =
+    window.location.href +
+    "&start1=" +
+    startingTimeVideo1.toFixed(4) +
+    "&start2=" +
+    startingTimeVideo2.toFixed(4);
+  // Create a temporary input element
+  const input = document.createElement("input");
+  input.style.position = "absolute";
+  input.style.left = "-9999px";
+  input.value = url;
+  document.body.appendChild(input);
+
+  // Select the input field and copy the URL
+  input.select();
+  document.execCommand("copy");
+
+  // Remove the input element
+  document.body.removeChild(input);
+
+  const notification = document.getElementById("share-msg");
+  const button = document.getElementById("share-btn");
+
+  notification.classList.remove("hidden");
+  button.classList.add("hidden");
+
+  setTimeout(function () {
+    notification.classList.add("hidden");
+    button.classList.remove("hidden");
+  }, 1000);
 }
