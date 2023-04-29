@@ -5,9 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
     <title>Route Comparison Tool</title>
-    <link href="https://vjs.zencdn.net/8.3.0/video-js.css" rel="stylesheet" />
-    <script src="https://vjs.zencdn.net/8.3.0/video.min.js"></script>
-    <script src="js/Youtube.min.js"></script>
 
     <link
       rel="stylesheet"
@@ -29,6 +26,7 @@
           "Noto Color Emoji";
       }
     </style>
+    <script src="https://www.youtube.com/iframe_api"></script>
   </head>
 
   <body
@@ -42,15 +40,7 @@
       >
         <!--Left Col-->
         <div class="flex flex-col w-full justify-center overflow-hidden mx-2">
-          <video
-            id="video1"
-            class="video-js"
-            controls
-            preload="auto"
-            width="640"
-            height="360"
-            data-setup="{ 'techOrder': ['youtube', 'html5'] }"
-          ></video>
+          <div id="player1"></div>
           <div class="bg-white shadow-md rounded px-2 py-2 mt-2 flex">
             <div class="flex justify-start">
               <button
@@ -113,15 +103,7 @@
 
         <!--Right Col-->
         <div class="flex flex-col w-full justify-center overflow-hidden mx-2">
-          <video
-            id="video2"
-            class="video-js"
-            controls
-            preload="auto"
-            width="640"
-            height="360"
-            data-setup="{ 'techOrder': ['youtube', 'html5'] }"
-          ></video>
+          <div id="player2"></div>
           <div class="bg-white shadow-md rounded px-2 py-2 mt-2 flex">
             <div class="flex justify-start">
               <p>Video 2 Start: <span id="saved-time-video2">0.00s</span></p>
